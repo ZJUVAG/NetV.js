@@ -64,54 +64,29 @@ export class RenderLinkManager extends RenderElementManager {
      * @param links all link data
      */
     public refreshPosition(links: Link[]) {
-        let count = 0 // TODO: useless count
-        links.forEach((link, i) => {
-            // TODO: consider link and render link attribute mapping
-            const source = link.source()
-            const sourcePosition = source.position()
-            this.attributes.get('in_source').array[2 * (count + i)] = sourcePosition.x
-            this.attributes.get('in_source').array[2 * (count + i) + 1] = sourcePosition.y
-
-            const target = link.target()
-            const targetPosition = target.position()
-            this.attributes.get('in_target').array[2 * (count + i)] = targetPosition.x
-            this.attributes.get('in_target').array[2 * (count + i) + 1] = targetPosition.y
-
-            // currently no need for color&renderId change
-            /*
-            this.attributes[LinkAttrKey.WIDTH].array[this.count + i] =
-                link.strokeWidth() * this.pixelRatio
-
-            const color = link.strokeColor()
-            this.attributes[LinkAttrKey.COLOR].array[4 * (this.count + i)] = color.r
-            this.attributes[LinkAttrKey.COLOR].array[4 * (this.count + i) + 1] = color.g
-            this.attributes[LinkAttrKey.COLOR].array[4 * (this.count + i) + 2] = color.b
-            this.attributes[LinkAttrKey.COLOR].array[4 * (this.count + i) + 3] = color.a
-
-            const renderIdColor = encodeRenderId(2 * (this.count + i) + 1) // NOTE: link render id, use odd integer
-            this.idAttributes.get('in_id').array[4 * (this.count + i)] = renderIdColor.r
-            this.idAttributes.get('in_id').array[4 * (this.count + i) + 1] = renderIdColor.g
-            this.idAttributes.get('in_id').array[4 * (this.count + i) + 2] = renderIdColor.b
-            this.idAttributes.get('in_id').array[4 * (this.count + i) + 3] = renderIdColor.a
-            */
-        })
-
         const sourceAttr = this.attributes.get('in_source')
         const targetAttr = this.attributes.get('in_target')
+
+        const sourceArray = sourceAttr.array
+        const targetArray = targetAttr.array
+        for (let i = 0; i < links.length; ++i) {
+            const link = links[i]
+            const source = link.$_source
+            const sourcePosition = source.$_position
+            sourceArray[2 * i] = sourcePosition.x
+            sourceArray[2 * i + 1] = sourcePosition.y
+
+            const target = link.$_target
+            const targetPosition = target.$_position
+            targetArray[2 * i] = targetPosition.x
+            targetArray[2 * i + 1] = targetPosition.y
+        }
 
         const arr = [sourceAttr, targetAttr]
 
         arr.forEach((attr) => {
-            if (!attr.isBuildIn) {
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, attr.buffer)
-                this.gl.bufferSubData(
-                    this.gl.ARRAY_BUFFER,
-                    attr.size * count * attr.array.BYTES_PER_ELEMENT,
-                    attr.array,
-                    attr.size * count,
-                    attr.size * links.length
-                )
-            }
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, attr.buffer)
+            this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, attr.array, 0, attr.size * links.length)
         })
     }
 }

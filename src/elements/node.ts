@@ -32,11 +32,12 @@ class Node extends Element {
     public $_draggingCallbackSet: Set<(e: any) => void> = new Set()
     public $_dragendCallbackSet: Set<(e: any) => void> = new Set()
 
-    private $_id: string
-    private $_position = {
+    public $_position = {
         x: 0,
         y: 0
     }
+
+    private $_id: string
 
     private $_elementReservedKeys = new Set(['id', 'x', 'y', 'style'])
 

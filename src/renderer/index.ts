@@ -14,7 +14,7 @@ import { RendererConfigs } from './interfaces'
 import { Color } from '../interfaces'
 import { decodeRenderId } from './utils'
 
-const MODIFIED_ELEMENTS_COUNT_UPPER_THRESHOLD = 100 // when modifiedElementCount is larger than it, $_shouldLazyUpdate will be true
+const MODIFIED_ELEMENTS_COUNT_UPPER_THRESHOLD = 10 // when modifiedElementCount is larger than it, $_shouldLazyUpdate will be true
 
 export class Renderer {
     public nodeManager: RenderNodeManager
